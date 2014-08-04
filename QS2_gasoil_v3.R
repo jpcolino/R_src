@@ -26,8 +26,14 @@ prices12 <- prices12[complete.cases(prices12),]
 prices12 <- prices12[42:dim(prices12)[1],]
   
 # Some previous plotting
+<<<<<<< HEAD
 plot.ts(c(prices10[,2], prices11[,2], prices12[,2]))
 plot.ts(c(prices10[,3], prices11[,3], prices12[,3]))
+=======
+par(mfrow=c(2,1))
+plot.ts(c(prices10[,2], prices11[,2], prices12[,2]), main='TTF Winter')
+plot.ts(c(prices10[,3], prices11[,3], prices12[,3]), main='Oil in Dollars')
+>>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 
 # Auxiliary functions for model calculation
 
@@ -59,6 +65,7 @@ spread10 <- prices10[,4] - prices10[,2] # Oil_Euros - Gas_Euros
 spread11 <- prices11[,4] - prices11[,2] 
 spread12 <- prices12[,4] - prices12[,2] 
 
+<<<<<<< HEAD
 SMovAvrg10 <- c(SMA(spread10,20))
 SMovAvrg10 <- ifelse(is.na(SMovAvrg10), 0, SMovAvrg10)
 
@@ -66,6 +73,15 @@ SMovAvrg11 <- c(SMA(spread11,20))
 SMovAvrg11 <- ifelse(is.na(SMovAvrg11), 0, SMovAvrg11)
 
 SMovAvrg12 <- c(SMA(spread12,20))
+=======
+SMovAvrg10 <- c(SMA(spread10,30))
+SMovAvrg10 <- ifelse(is.na(SMovAvrg10), 0, SMovAvrg10)
+
+SMovAvrg11 <- c(SMA(spread11,30))
+SMovAvrg11 <- ifelse(is.na(SMovAvrg11), 0, SMovAvrg11)
+
+SMovAvrg12 <- c(SMA(spread12,30))
+>>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 SMovAvrg12 <- ifelse(is.na(SMovAvrg12), 0, SMovAvrg12)
 
 EMovAvrg10 <- c(EMA(spread10,10))
@@ -85,17 +101,30 @@ SMovAvrg <- c(SMA(spread10,20),SMA(spread11,20), SMA(spread12,20))
 EMovAvrg <- c(EMA(spread10,10),EMA(spread11,10), EMA(spread12,10))
 
 par(mfrow=c(3,1))
+<<<<<<< HEAD
 ts.plot(as.ts(spread10), as.ts(SMovAvrg10), as.ts(EMovAvrg10))
 ts.plot(as.ts(spread11), as.ts(SMovAvrg11), as.ts(EMovAvrg11))
 ts.plot(as.ts(spread12), as.ts(SMovAvrg12), as.ts(EMovAvrg12))
 
 par(mfrow=c(1,1))
 ts.plot(as.ts(spread), as.ts(SMovAvrg), as.ts(EMovAvrg))
+=======
+ts.plot(as.ts(spread10), as.ts(SMovAvrg10), as.ts(EMovAvrg10), main = 'Spread 2010')
+ts.plot(as.ts(spread11), as.ts(SMovAvrg11), as.ts(EMovAvrg11), main = 'Spread 2011')
+ts.plot(as.ts(spread12), as.ts(SMovAvrg12), as.ts(EMovAvrg12), main = 'Spread 2012')
+
+par(mfrow=c(1,1))
+ts.plot(as.ts(spread), as.ts(SMovAvrg), as.ts(EMovAvrg), main = 'Spread Evolution from 2010 to 2012')
+>>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 
 tt <- rep(1:length(spread))
 reg <- lm(spread ~ tt)
 
+<<<<<<< HEAD
 plot.ts(spread)
+=======
+plot.ts(spread, main = 'Spread Evolution from 2010 to 2012 with Drift problem')
+>>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 abline(reg$coef[1],reg$coef[2], lwd=3, col='red')
 
 spread102 <- spread10 - reg$coef[1] - reg$coef[2]*rep(1:length(spread10))
@@ -104,11 +133,19 @@ spread122 <- spread12 - reg$coef[1] - reg$coef[2]*rep(1:length(spread12))
 spread2  <- c(spread102,spread112, spread122)
 
 par(mfrow=c(2,1))
+<<<<<<< HEAD
 ts.plot(as.ts(spread2), as.ts(SMovAvrg), as.ts(EMovAvrg))
 
 spread3 <- spread-reg$coef[1] - reg$coef[2]*rep(1:length(spread))
 ts.plot(as.ts(spread3), as.ts(c(SMA(spread102,10),SMA(spread112,10),
         SMA(spread122,10))), as.ts(c(EMA(spread102,10),EMA(spread112,10),EMA(spread122,10))))
+=======
+ts.plot(as.ts(spread2), main = 'Spread Evolution from 2010 to 2012 with no-Drift')
+
+spread3 <- spread-reg$coef[1] - reg$coef[2]*rep(1:length(spread))
+ts.plot(as.ts(spread3), as.ts(c(SMA(spread102,10),SMA(spread112,10),
+        SMA(spread122,10))), as.ts(c(EMA(spread102,10),EMA(spread112,10),EMA(spread122,10))) )
+>>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 
 # plot.ts(spread-reg$coef[1] - reg$coef[2]*rep(1:length(spread)))
 

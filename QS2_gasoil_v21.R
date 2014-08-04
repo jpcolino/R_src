@@ -11,11 +11,7 @@ rm(list = ls()) # Clean the workspace
 
 # Reading and Loading the data
 
-<<<<<<< HEAD
-setwd("//Users/JPC/Google Drive/Gas Oil Spread Trade/") # Set here your working directory
-=======
 setwd("C:/Users/J35041/Desktop/Gas Oil Spread Trade") # Set here your working directory
->>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 
 prices10 <- read.csv("gasoil10.csv", header = TRUE, sep = ",", quote="\"", dec=".")
 prices10 <- prices10[complete.cases(prices10),]
@@ -30,6 +26,8 @@ prices12 <- prices12[complete.cases(prices12),]
 prices12 <- prices12[42:dim(prices12)[1],]
   
 # Some previous plotting
+
+
 plot.ts(c(prices10[,2], prices11[,2], prices12[,2]))
 plot.ts(c(prices10[,3], prices11[,3], prices12[,3]))
 
@@ -56,16 +54,12 @@ MovingCor10 <- running(as.numeric(prices10[,4]), as.numeric(prices10[,2]), cor)
 MovingCor11 <- running(as.numeric(prices11[,4]), as.numeric(prices11[,2]), cor)
 MovingCor12 <- running(as.numeric(prices12[,4]), as.numeric(prices12[,2]), cor)
 
-<<<<<<< HEAD
-# ts.plot(MovingCor10,MovingCor11,MovingCor12)
-=======
->>>>>>> 9706122272dee6f15253ae52acb7e0c87a60afac
 
 # Regresion for the whole period: we do not trade the trend
 
-spread10 <- 0.39*prices10[,4]-0.61*prices10[,2] # Oil_Euros - Gas_Euros
-spread11 <- 0.39*prices11[,4]-0.61*prices11[,2] 
-spread12 <- 0.39*prices12[,4]-0.61*prices12[,2] 
+spread10 <- 10*182*24*prices10[,2]-10000*prices10[,4] # Gas_Euros - Oil_Euros
+spread11 <- 10*182*24*prices11[,2]-10000*prices11[,4] 
+spread12 <- 10*182*24*prices12[,2]-10000*prices12[,4]
 
 spread   <- c(spread10,spread11, spread12)
 SMovAvrg <- c(SMA(spread10,20),SMA(spread11,20), SMA(spread12,20))
@@ -126,7 +120,7 @@ mean_10  <- spread11[1]* exp(-coef(fit10)[2]*t) + (coef(fit10)[1] / coef(fit10)[
  
 var_10   <- (coef(fit10)[3]^2 / (2*coef(fit10)[2])) * (1-exp(-2*coef(fit10)[2]*t))
 
-std = 1
+std = 0.5
 
 position11_f    <- rep (0, times=length(spread11) )
 position11_m2m  <- rep (0, times=length(spread11) )
@@ -137,7 +131,7 @@ results11       <- rep (0, times=length(spread11) )
 for (i in 2:length(spread11)) {
 
   predict[i] <- coef(fit10)[1] / coef(fit10)[2] + ( spread11[i-1] -
-    coef(fit10)[1] / coef(fit10)[2]) * exp ( -coef(fit10)[2])
+                coef(fit10)[1] / coef(fit10)[2]) * exp ( -coef(fit10)[2])
 
 # OPENING POSITIONS ------------------------------------------------------------
   
@@ -145,7 +139,7 @@ for (i in 2:length(spread11)) {
   
   if  (position11_f[i-1] == 0 && spread11[i] > ( mean_10[i] + std * var_10[i] )) 
     {
-      position11_f[i]    = - spread11[i]
+      position11_f[i]    = spread11[i]
       position11_m2m[i]  = position11_m2m[i-1] 
     }
   
@@ -153,19 +147,19 @@ for (i in 2:length(spread11)) {
   
   if  (position11_f[i-1] == 0 && spread11[i] < ( mean_10[i] - std * var_10[i] )) 
     {
-      position11_f[i]    = spread11[i]
+      position11_f[i]    = - spread11[i]
       position11_m2m[i]  = position11_m2m[i-1] 
     }
   
 # WAITING THE POSITIONS ------------------------------------------------------------  
   
-  if  (position11_f[i-1] < 0 && (spread11[i] > ( mean_10[i] - std * var_10[i] )))  
+  if  (position11_f[i-1] > 0 && (spread11[i] > ( mean_10[i] - std * var_10[i] )))  
     {
       position11_f[i] = position11_f[i-1]
       position11_m2m[i] = position11_m2m[i-1] + (- spread11[i] + spread11[i-1])
     }
   
-  if  (position11_f[i-1] > 0 && (spread11[i] < ( mean_10[i] + std * var_10[i] )))  
+  if  (position11_f[i-1] < 0 && (spread11[i] < ( mean_10[i] + std * var_10[i] )))  
     {
       position11_f[i] = position11_f[i-1]
       position11_m2m[i] = position11_m2m[i-1] + ( spread11[i] - spread11[i-1])
@@ -175,16 +169,16 @@ for (i in 2:length(spread11)) {
 
 # Closing short position
   
-if  (position11_f[i-1] < 0 && (spread11[i] < ( mean_10[i] - std * var_10[i] )))  
+if  (position11_f[i-1] > 0 && (spread11[i] < ( mean_10[i] - std * var_10[i] )))  
   {
-    results11[i] = - position11_f[i-1] - spread11[i]
+    results11[i] = position11_f[i-1] - spread11[i]
     position11_f[i] = 0
     position11_m2m[i] = position11_m2m[i-1] + (- spread11[i] + spread11[i-1])
   }
 
 # Closing long position
 
-if  (position11_f[i-1] > 0 && (spread11[i] > ( mean_10[i] + std * var_10[i] )))  
+if  (position11_f[i-1] < 0 && (spread11[i] > ( mean_10[i] + std * var_10[i] )))  
   {
     results11[i] = spread11[i] - position11_f[i-1] 
     position11_f[i] = 0
@@ -224,7 +218,7 @@ mean_11  <- spread12[1]* exp(-coef(fit11)[2]*t) + (coef(fit11)[1] / coef(fit11)[
 
 var_11   <- (coef(fit11)[3]^2 / (2*coef(fit11)[2])) * (1-exp(-2*coef(fit11)[2]*t))
 
-std = 1
+std = 1.7
 
 position12_f    <- rep (0, times=length(spread12) )
 position12_m2m  <- rep (0, times=length(spread12) )
@@ -243,7 +237,7 @@ for (i in 2:length(spread12)) {
   
   if  (position12_f[i-1] == 0 && spread12[i] > ( mean_11[i] + std * var_11[i] )) 
   {
-    position12_f[i]    = - spread12[i]
+    position12_f[i]    = spread12[i]
     position12_m2m[i]  = position12_m2m[i-1] 
   }
   
@@ -251,19 +245,19 @@ for (i in 2:length(spread12)) {
   
   if  (position12_f[i-1] == 0 && spread12[i] < ( mean_11[i] - std * var_11[i] )) 
   {
-    position12_f[i]    = spread12[i]
+    position12_f[i]    = - spread12[i]
     position12_m2m[i]  = position12_m2m[i-1] 
   }
   
   # WAITING THE POSITIONS ------------------------------------------------------------  
   
-  if  (position12_f[i-1] < 0 && (spread12[i] > ( mean_11[i] - std * var_11[i] )))  
+  if  (position12_f[i-1] > 0 && (spread12[i] > ( mean_11[i] - std * var_11[i] )))  
   {
     position12_f[i] = position12_f[i-1]
     position12_m2m[i] = position12_m2m[i-1] + (- spread12[i] + spread12[i-1])
   }
   
-  if  (position12_f[i-1] > 0 && (spread12[i] < ( mean_11[i] + std * var_11[i] )))  
+  if  (position12_f[i-1] < 0 && (spread12[i] < ( mean_11[i] + std * var_11[i] )))  
   {
     position12_f[i] = position12_f[i-1]
     position12_m2m[i] = position12_m2m[i-1] + ( spread12[i] - spread12[i-1])
@@ -273,16 +267,16 @@ for (i in 2:length(spread12)) {
   
   # Closing short position
   
-  if  (position12_f[i-1] < 0 && (spread12[i] < ( mean_11[i] - std * var_11[i] )))  
+  if  (position12_f[i-1] > 0 && (spread12[i] < ( mean_11[i] - std * var_11[i] )))  
   {
-    results12[i] = - position12_f[i-1] - spread12[i]
+    results12[i] = position12_f[i-1] - spread12[i]
     position12_f[i] = 0
     position12_m2m[i] = position12_m2m[i-1] + (- spread12[i] + spread12[i-1])
   }
   
   # Closing long position
   
-  if  (position12_f[i-1] > 0 && (spread12[i] > ( mean_11[i] + std * var_11[i] )))  
+  if  (position12_f[i-1] < 0 && (spread12[i] > ( mean_11[i] + std * var_11[i] )))  
   {
     results12[i] = spread12[i] - position12_f[i-1] 
     position12_f[i] = 0
@@ -314,7 +308,7 @@ par(mfrow=c(2,1))
 plot.ts(position11_m2m)
 plot.ts(position12_m2m)
 
-par(mfrow=c(2,1))
-#plot.ts(position10_f)
-plot.ts(position11_f)
-plot.ts(position12_f)
+# par(mfrow=c(2,1))
+# #plot.ts(position10_f)
+# plot.ts(position11_f)
+# plot.ts(position12_f)
